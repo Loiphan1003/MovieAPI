@@ -30,8 +30,18 @@ namespace MovieAPI.Controllers
             {
                 return BadRequest();
             }
-
             var res = _genreRepository.Add(genreVM);
+            return Ok(res);
+        }
+
+        [HttpDelete("{id}")]
+        public IActionResult Delete(Guid id)
+        {
+            var res = _genreRepository.RemoveById(id);
+            if(res == null)
+            {
+                return NotFound();
+            }
             return Ok(res);
         }
     }

@@ -1,12 +1,32 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using MovieAPI.Entities;
+using MovieAPI.Services;
 
 namespace MovieAPI.Controllers
 {
-    public class MovieController : Controller
+    [Route("api/[controller]")]
+    [ApiController]
+    public class MovieController : ControllerBase
     {
-        public IActionResult Index()
+        private readonly IMovieRepository _movieRepository;
+
+        public MovieController(IMovieRepository movieRepository)
         {
-            return View();
+            _movieRepository = movieRepository;
+        }
+
+        [HttpGet]
+        public IActionResult GetAll()
+        {
+            var res = _movieRepository.GetAll();
+            return Ok(res);
+        }
+
+        [HttpPost]
+        public IActionResult Add(MovieVM movieVM)
+        {
+            var res = _movieRepository.Add(movieVM);
+            return Ok(res);
         }
     }
 }

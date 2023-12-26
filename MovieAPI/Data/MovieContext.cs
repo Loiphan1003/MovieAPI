@@ -12,6 +12,8 @@ namespace MovieAPI.Data
         public DbSet<Genre> Genres { get; set; }
         public DbSet<Movie> Movies { get; set; }
         public DbSet<MovieGenre> MovieGenres { get; set; }
+        public DbSet<Person> Persons { get; set; }
+        public DbSet<Cast> Casts { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -23,6 +25,11 @@ namespace MovieAPI.Data
                 .HasMany(g => g.Movies)
                 .WithMany(m => m.Genres)
                 .UsingEntity<MovieGenre>();
+
+            modelBuilder.Entity<Person>()
+                .HasMany(p => p.Movies)
+                .WithMany(m => m.Persons)
+                .UsingEntity<Cast>();
         }
     }
 }

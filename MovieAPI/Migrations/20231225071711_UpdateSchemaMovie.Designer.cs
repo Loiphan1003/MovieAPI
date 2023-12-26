@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using MovieAPI.Data;
 
@@ -11,9 +12,11 @@ using MovieAPI.Data;
 namespace MovieAPI.Migrations
 {
     [DbContext(typeof(MovieContext))]
-    partial class MovieContextModelSnapshot : ModelSnapshot
+    [Migration("20231225071711_UpdateSchemaMovie")]
+    partial class UpdateSchemaMovie
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -21,25 +24,6 @@ namespace MovieAPI.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
-
-            modelBuilder.Entity("MovieAPI.Data.Cast", b =>
-                {
-                    b.Property<Guid>("MovieId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("PersonId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("CharacterName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("MovieId", "PersonId");
-
-                    b.HasIndex("PersonId");
-
-                    b.ToTable("Casts");
-                });
 
             modelBuilder.Entity("MovieAPI.Data.Genre", b =>
                 {
@@ -98,47 +82,6 @@ namespace MovieAPI.Migrations
                     b.ToTable("MovieGenres");
                 });
 
-            modelBuilder.Entity("MovieAPI.Data.Person", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("Born")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Gender")
-                        .HasMaxLength(6)
-                        .HasColumnType("nvarchar(6)");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Persons");
-                });
-
-            modelBuilder.Entity("MovieAPI.Data.Cast", b =>
-                {
-                    b.HasOne("MovieAPI.Data.Movie", "Movie")
-                        .WithMany("Casts")
-                        .HasForeignKey("MovieId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("MovieAPI.Data.Person", "Person")
-                        .WithMany("Casts")
-                        .HasForeignKey("PersonId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Movie");
-
-                    b.Navigation("Person");
-                });
-
             modelBuilder.Entity("MovieAPI.Data.MovieGenre", b =>
                 {
                     b.HasOne("MovieAPI.Data.Genre", "Genre")
@@ -165,14 +108,7 @@ namespace MovieAPI.Migrations
 
             modelBuilder.Entity("MovieAPI.Data.Movie", b =>
                 {
-                    b.Navigation("Casts");
-
                     b.Navigation("MovieGenres");
-                });
-
-            modelBuilder.Entity("MovieAPI.Data.Person", b =>
-                {
-                    b.Navigation("Casts");
                 });
 #pragma warning restore 612, 618
         }

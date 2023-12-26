@@ -1,0 +1,8 @@
+﻿namespace MovieAPI.Entities
+{
+    public class GenreDTO
+    {
+        public Guid Id { get; set; }
+        public required string Name { get; set; }
+    }
+}
