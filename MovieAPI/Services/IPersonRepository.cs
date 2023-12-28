@@ -7,6 +7,8 @@ namespace MovieAPI.Services
     {
         Person Add(PersonVM person);
         List<PersonDTO> GetAll();
-
+        List<PersonDTO> GetByName(string name);
+        PersonDTO Update(PersonDTO person);
+        Person Delete(Guid id);
     }
 }

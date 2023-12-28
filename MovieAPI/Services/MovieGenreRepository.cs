@@ -41,7 +41,7 @@ namespace MovieAPI.Services
                 _context.MovieGenres.Add(addMovieGenre);
                 _context.SaveChanges();
                 return true;
-            }catch(Exception ex)
+            }catch
             {
                 return false;
             }

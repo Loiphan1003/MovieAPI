@@ -44,5 +44,22 @@ namespace MovieAPI.Controllers
             }
             return Ok(res);
         }
+
+        [HttpPut]
+        public IActionResult Update(GenreDTO genre)
+        {
+            if(!ModelState.IsValid)
+            {
+                return BadRequest();
+            }
+
+            var res = _genreRepository.Update(genre);
+            if(res == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(res);
+        }
     }
 }

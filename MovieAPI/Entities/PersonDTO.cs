@@ -6,7 +6,7 @@ namespace MovieAPI.Entities
     {
         public Guid Id { get; set; }
         public required string Name { get; set; }
-        public string? Born { get; set; }
+        public DateTime? Born { get; set; }
 
         [MaxLength(6)]
         public string? Gender { get; set; }

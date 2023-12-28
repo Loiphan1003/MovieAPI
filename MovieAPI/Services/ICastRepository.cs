@@ -7,7 +7,6 @@ namespace MovieAPI.Services
     {
         List<Cast> GetAll();
         Cast AddOne(CastVM cast);
-
         List<CastDTO> GetAllCastByMovieId(Guid movieId);
     }
 }

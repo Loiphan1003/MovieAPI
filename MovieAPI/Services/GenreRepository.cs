@@ -61,5 +61,19 @@ namespace MovieAPI.Services
 
             return new GenreDTO { Id = res.Id, Name = res.Name };
         }
+
+        public GenreDTO Update(GenreDTO genre)
+        {
+            var res = _context.Genres.FirstOrDefault(g => g.Id.Equals(genre.Id));
+            if(res == null)
+            {
+                return null;
+            }
+
+            res.Name = genre.Name;
+            _context.Genres.Update(res);
+            _context.SaveChanges();
+            return genre;
+        }
     }
 }

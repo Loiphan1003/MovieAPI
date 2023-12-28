@@ -9,7 +9,7 @@ namespace MovieAPI.Services
         List<GenreDTO> GetAllByIdMovie(Guid movieId);
 
         Genre Add(GenreVM genreVM);
-
+        GenreDTO Update(GenreDTO genre);
         GenreDTO RemoveById(Guid id);
     }
 }
