@@ -39,36 +39,59 @@ namespace MovieAPI.Services
             return newMovie;
         }
 
-        public List<MovieDTO> GetMovieByName(string nameMovie)
+        public List<MovieDTO> GetAll(QueryObject queryObject)
         {
-            var res = _context.Movies
-                .Select(m => _mapper.Map<MovieDTO>(m))
-                .AsEnumerable()
-                .Where(m => m.Title.Contains(nameMovie))
-                .ToList();
+            var query = _context.Movies.AsQueryable();
 
-            if(res != null)
+            #region Filter Name Movie
+            if (!string.IsNullOrEmpty(queryObject.Search))
             {
-                foreach (var item in res)
+                query = query.Where(m => m.Title.Contains(queryObject.Search));
+            }
+            #endregion
+
+            #region Sort By
+            if (!string.IsNullOrEmpty(queryObject.SortBy))
+            {
+                switch (queryObject.SortBy)
                 {
-                    item.Genres = _genreRepository.GetAllByIdMovie(item.Id);
-                    item.Casts = _castRepository.GetAllCastByMovieId(item.Id);
+                    case "imdb_rate_desc":
+                        query = query.OrderByDescending(m => m.IMDbRate);
+                        break;
+                    case "imdb_rate_asc":
+                        query = query.OrderBy(m => m.IMDbRate);
+                        break;
+                    case "budget_desc":
+                        query = query.OrderByDescending(m => m.Budget);
+                        break;
+                    case "budget_asc":
+                        query = query.OrderBy(m => m.Budget);
+                        break;
                 }
             }
+            #endregion
 
-            return res;
-        }
+            #region Paging
+            if (queryObject.Page > 0 && queryObject.PageSize > 0)
+            {
+                query = query.Skip((queryObject.Page - 1) * queryObject.PageSize).Take(queryObject.PageSize);
+            }
+            #endregion
 
-        public  List<MovieDTO> GetAll()
-        {
-            var res = _context.Movies.Select(m => _mapper.Map<MovieDTO>(m)).ToList();
+            var movies = query.Select(m => _mapper.Map<MovieDTO>(m)).ToList();
 
-            foreach (var item in res)
+            if (movies == null)
+            {
+                return [];
+            }
+
+            foreach (var item in movies)
             {
                 item.Genres = _genreRepository.GetAllByIdMovie(item.Id);
                 item.Casts = _castRepository.GetAllCastByMovieId(item.Id);
             }
-            return res;
+
+            return movies;
         }
 
         public MovieUpdate Update(MovieUpdate movie)
@@ -77,7 +100,7 @@ namespace MovieAPI.Services
             {
                 var res = _context.Movies.FirstOrDefault(m => m.Id.Equals(movie.Id));
 
-                if(res == null)
+                if (res == null)
                 {
                     return null;
                 }
@@ -102,7 +125,7 @@ namespace MovieAPI.Services
         {
             var res = _context.Movies
                 .FirstOrDefault(m => m.Id.Equals(id));
-            if(res == null)
+            if (res == null)
             {
                 return null;
             }
@@ -110,5 +133,6 @@ namespace MovieAPI.Services
             _context.SaveChanges();
             return res;
         }
+
     }
 }

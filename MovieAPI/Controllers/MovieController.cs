@@ -16,22 +16,17 @@ namespace MovieAPI.Controllers
         }
 
         [HttpGet]
-        public IActionResult GetAll()
+        public IActionResult GetAll([FromQuery] QueryObject query)
         {
-            var res = _movieRepository.GetAll();
-            return Ok(res);
-        }
-
-        [HttpGet("name={name}")]
-        public IActionResult FindByName(string name)
-        {
-            var res = _movieRepository.GetMovieByName(name);
-            if(res == null)
+            try
             {
-                return NotFound();
+                var res = _movieRepository.GetAll(query);
+                return Ok(res);
             }
-
-            return Ok(res);
+            catch(Exception ex)
+            {
+                return BadRequest($"{ex}");
+            }
         }
 
         [HttpPost]
@@ -47,7 +42,7 @@ namespace MovieAPI.Controllers
             try
             {
                 var res = _movieRepository.Update(movie);
-                if(res == null)
+                if (res == null)
                 {
                     return NotFound();
                 }
@@ -64,7 +59,7 @@ namespace MovieAPI.Controllers
         public IActionResult Delete(Guid id)
         {
             var res = _movieRepository.Delete(id);
-            if(res == null)
+            if (res == null)
             {
                 return NotFound();
             }

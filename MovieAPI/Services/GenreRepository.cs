@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Internal;
 using MovieAPI.Data;
 using MovieAPI.Entities;
 
@@ -38,19 +39,19 @@ namespace MovieAPI.Services
 
         public List<GenreDTO> GetAllByIdMovie(Guid movieId)
         {
-            var res = _context.Genres
-                    .FromSql(_storeProcedure.FindGenreByMovieId(movieId))
-                    .AsEnumerable()
-                    .Select(g => _mapper.Map<GenreDTO>(g))
-                    .ToList();
+            var query = _context.Genres
+                  .FromSql(_storeProcedure.FindGenreByMovieId(movieId))
+                  .ToList();
 
-            return res;
+            var res = query.Select(g => new GenreDTO { Name = g.Name, Id = g.Id });
+
+
+            return res.ToList();
         }
 
         public GenreDTO RemoveById(Guid id)
         {
-            var res = _context.Genres
-                .FirstOrDefault(g => g.Id == id);
+            var res = _context.Genres.FirstOrDefault(g => g.Id == id);
 
             if(res == null )
             {
