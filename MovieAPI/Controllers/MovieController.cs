@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using MovieAPI.Entities;
 using MovieAPI.Services;
 
@@ -29,6 +30,7 @@ namespace MovieAPI.Controllers
             }
         }
 
+        [Authorize]
         [HttpPost]
         public IActionResult Add(MovieVM movieVM)
         {
@@ -36,6 +38,7 @@ namespace MovieAPI.Controllers
             return Ok(res);
         }
 
+        [Authorize]
         [HttpPut]
         public IActionResult UpdateOne(MovieUpdate movie)
         {
@@ -55,6 +58,7 @@ namespace MovieAPI.Controllers
             }
         }
 
+        [Authorize]
         [HttpDelete]
         public IActionResult Delete(Guid id)
         {

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using MovieAPI.Entities;
 using MovieAPI.Services;
@@ -16,13 +17,7 @@ namespace MovieAPI.Controllers
             _movieGenreRepository = movieGenreRepository;
         }
 
-        [HttpPost]
-        public IActionResult AddMany(string nameMovie, List<GenreVM> genres)
-        {
-            var res = _movieGenreRepository.AddManyGenres(nameMovie, genres);
-            return Ok();
-        }
-
+        [Authorize]
         [HttpPost("add-one")]
         public IActionResult AddOne(MovieGenreVM movieGenre)
         {

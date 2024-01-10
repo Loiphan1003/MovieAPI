@@ -37,7 +37,7 @@ namespace MovieAPI.Services
         {
             var res = _context.Persons.FirstOrDefault(p => p.Id.Equals(id));
 
-            if(res == null)
+            if (res == null)
             {
                 return null;
             }
@@ -47,9 +47,42 @@ namespace MovieAPI.Services
             return res;
         }
 
-        public List<PersonDTO> GetAll()
+        public List<PersonDTO> GetAll(QueryObject queryObject)
         {
-            return _context.Persons.Select(p => _mapper.Map<PersonDTO>(p)).ToList();
+            var query = _context.Persons.AsQueryable();
+
+            #region Search Name
+            if (!string.IsNullOrEmpty(queryObject.Search))
+            {
+                query = query.Where(p => p.Name.Contains(queryObject.Search));
+            }
+            #endregion
+
+            #region Sort BY
+            if (!string.IsNullOrEmpty(queryObject.SortBy))
+            {
+                switch (queryObject.SortBy)
+                {
+                    case "name":
+                        query = query.OrderBy(p => p.Name);
+                        break;
+                    case "name_desc":
+                        query = query.OrderByDescending(p => p.Name);
+                        break;
+                }
+            }
+            #endregion
+
+            #region Paging
+            if (queryObject.Page > 0 && queryObject.PageSize > 0)
+            {
+                query = query.Skip((queryObject.Page - 1) * queryObject.PageSize).Take(queryObject.PageSize);
+            }
+            #endregion
+
+            var persons = query.Select(p => _mapper.Map<PersonDTO>(p)).ToList();
+
+            return persons;
         }
 
         public List<PersonDTO> GetByName(string name)
@@ -66,7 +99,7 @@ namespace MovieAPI.Services
         {
             var res = _context.Persons.FirstOrDefault(p => p.Id.Equals(person.Id));
 
-            if(res == null)
+            if (res == null)
             {
                 return null;
             }

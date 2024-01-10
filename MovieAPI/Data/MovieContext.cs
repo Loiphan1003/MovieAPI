@@ -1,8 +1,10 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 
 namespace MovieAPI.Data
 {
-    public class MovieContext : DbContext
+    public class MovieContext : IdentityDbContext<IdentityUser>
     {
         public MovieContext(DbContextOptions<MovieContext> options) : base(options)
         {
@@ -18,6 +20,8 @@ namespace MovieAPI.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            base.OnModelCreating(modelBuilder);
+
             modelBuilder.Entity<Genre>()
                 .HasKey(g => g.Id);
 
