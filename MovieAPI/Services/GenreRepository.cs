@@ -1,6 +1,5 @@
 ﻿using AutoMapper;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Internal;
 using MovieAPI.Data;
 using MovieAPI.Entities;
 
@@ -12,29 +11,79 @@ namespace MovieAPI.Services
         private readonly MovieContext _context;
         private readonly StoreProcedure _storeProcedure;
 
-        public GenreRepository(MovieContext context, StoreProcedure storeProcedure, IMapper mapper)        {
+        public GenreRepository(MovieContext context, StoreProcedure storeProcedure, IMapper mapper)
+        {
             _context = context;
             _storeProcedure = storeProcedure;
             _mapper = mapper;
         }
 
-        public Genre Add(GenreVM genreVM)
+        public RepositoryResult Add(GenreVM genreVM)
         {
-            Genre genre = new Genre
+            try
             {
-                Id = Guid.NewGuid(),
-                Name = genreVM.Name
-            };
+                var existGenre = _context.Genres.FirstOrDefault(g => g.Name.Equals(genreVM.Name));
 
-            _context.Genres.Add(genre);
-            _context.SaveChanges();
+                if (existGenre != null)
+                {
+                    return new RepositoryResult(false, "The film genre already exists");
+                }
 
-            return genre;
+                Genre genre = new Genre
+                {
+                    Id = Guid.NewGuid(),
+                    Name = genreVM.Name
+                };
+
+                _context.Genres.Add(genre);
+                _context.SaveChanges();
+
+                //_context.Database.ExecuteSqlRaw("execute InstertNewGenre @Id, @Name",
+                //    new SqlParameter("@Id", genre.Id),
+                //    new SqlParameter("@Name",genre.Name)
+                //    );
+
+                return new RepositoryResult(true, "More successful movie genres");
+            }
+            catch (Exception ex)
+            {
+                return new RepositoryResult(false, ex.ToString());
+            }
         }
 
-        public List<GenreDTO> GetAll()
+        public List<GenreDTO> GetAll(QueryObject q)
         {
-            return _context.Genres.Select(g => _mapper.Map<GenreDTO>(g)).ToList();
+            var query = _context.Genres.AsQueryable();
+
+            #region Filter Name
+            if (!string.IsNullOrEmpty(q.Search))
+            {
+                query = query.Where(g => g.Name.Contains(q.Search));
+            }
+            #endregion
+
+            #region Sort
+            if (!string.IsNullOrEmpty(q.SortBy))
+            {
+                switch (q.SortBy)
+                {
+                    case "name":
+                        query = query.OrderBy(g => g.Name);
+                        break;
+                }
+            }
+            #endregion
+
+            #region Paging
+            if (q.PageSize > 0 && q.Page > 0)
+            {
+                query = query.Skip((q.Page - 1) * q.PageSize).Take(q.PageSize);
+            }
+            #endregion
+
+            var genres = query.Select(g => _mapper.Map<GenreDTO>(g)).ToList();
+
+            return genres;
         }
 
         public List<GenreDTO> GetAllByIdMovie(Guid movieId)
@@ -49,32 +98,33 @@ namespace MovieAPI.Services
             return res.ToList();
         }
 
-        public GenreDTO RemoveById(Guid id)
+        public RepositoryResult RemoveById(Guid id)
         {
             var res = _context.Genres.FirstOrDefault(g => g.Id == id);
 
-            if(res == null )
+            if (res == null)
             {
-                return null;
+                return new RepositoryResult(false, "Film genres that do not exist");
             }
             _context.Genres.Remove(res);
             _context.SaveChanges();
 
-            return new GenreDTO { Id = res.Id, Name = res.Name };
+            return new RepositoryResult(true, "Successfully remove movie genres");
         }
 
-        public GenreDTO Update(GenreDTO genre)
+        public RepositoryResult Update(GenreDTO genre)
         {
             var res = _context.Genres.FirstOrDefault(g => g.Id.Equals(genre.Id));
-            if(res == null)
+            if (res == null)
             {
-                return null;
+                return new RepositoryResult(false, "Film genres that do not exist");
             }
 
             res.Name = genre.Name;
             _context.Genres.Update(res);
             _context.SaveChanges();
-            return genre;
+
+            return new RepositoryResult(true, "Successful movie genre update");
         }
     }
 }

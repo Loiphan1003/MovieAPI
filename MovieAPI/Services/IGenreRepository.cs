@@ -5,11 +5,11 @@ namespace MovieAPI.Services
 {
     public interface IGenreRepository
     {
-        List<GenreDTO> GetAll();
+        List<GenreDTO> GetAll(QueryObject query);
         List<GenreDTO> GetAllByIdMovie(Guid movieId);
 
-        Genre Add(GenreVM genreVM);
-        GenreDTO Update(GenreDTO genre);
-        GenreDTO RemoveById(Guid id);
+        RepositoryResult Add(GenreVM genreVM);
+        RepositoryResult Update(GenreDTO genre);
+        RepositoryResult RemoveById(Guid id);
     }
 }

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using MovieAPI.Entities;
 using MovieAPI.Services;
@@ -22,6 +23,7 @@ namespace MovieAPI.Controllers
             return Ok(_castRepository.GetAll());
         }
 
+        [Authorize]
         [HttpPost]
         public IActionResult AddOne(CastVM cast)
         {

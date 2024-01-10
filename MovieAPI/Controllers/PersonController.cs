@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using MovieAPI.Entities;
 using MovieAPI.Services;
@@ -17,22 +18,31 @@ namespace MovieAPI.Controllers
         }
 
         [HttpGet]
-        public IActionResult GetAll()
+        public IActionResult GetAll([FromQuery] QueryObject queryObject)
         {
-            return Ok(_personRepository.GetAll());
+            try
+            {
+                var res = _personRepository.GetAll(queryObject);
+                return Ok(res);
+            }
+            catch(Exception ex)
+            {
+                return BadRequest($"{ex}");
+            }
         }
 
         [HttpGet("name={name}")]
         public IActionResult GetByName(string name)
         {
             var res = _personRepository.GetByName(name);
-            if(res.Count == 0)
+            if (res.Count == 0)
             {
                 return NotFound();
             }
             return Ok(res);
         }
 
+        [Authorize]
         [HttpPost]
         public IActionResult AddPerson(PersonVM person)
         {
@@ -40,23 +50,24 @@ namespace MovieAPI.Controllers
             return Ok(res);
         }
 
-
+        [Authorize]
         [HttpPut]
         public IActionResult Update(PersonDTO person)
         {
             var res = _personRepository.Update(person);
-            if(res == null)
+            if (res == null)
             {
                 return NotFound();
             }
             return Ok(res);
         }
 
+        [Authorize]
         [HttpDelete("{id}")]
         public IActionResult Delete(Guid id)
         {
             var res = _personRepository.Delete(id);
-            if(res == null)
+            if (res == null)
             {
                 return NotFound();
             }

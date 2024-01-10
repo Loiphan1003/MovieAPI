@@ -1,6 +1,6 @@
-﻿namespace MovieAPI.Entities
+﻿namespace MovieAPI.Data
 {
-    public class GenreDTO
+    public class Company
     {
         public Guid Id { get; set; }
         public string Name { get; set; }
