@@ -4,6 +4,6 @@
     {
         public required string PersonName { get; set; }
         public required string MovieName { get; set; }
-        public required string CharacterName { get; set; }
+        public required string Character { get; set; }
     }
 }

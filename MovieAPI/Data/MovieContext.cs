@@ -30,6 +30,7 @@ namespace MovieAPI.Data
                 .WithMany(m => m.Genres)
                 .UsingEntity<MovieGenre>();
 
+
             modelBuilder.Entity<Person>()
                 .HasMany(p => p.Movies)
                 .WithMany(m => m.Persons)

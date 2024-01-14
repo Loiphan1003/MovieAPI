@@ -1,4 +1,6 @@
-﻿namespace MovieAPI.Data
+﻿using MovieAPI.Entities;
+
+namespace MovieAPI.Data
 {
     public class Movie
     {
@@ -9,11 +11,8 @@
         public string? Runtime { get; set; }
         public float IMDbRate { get; set; }
 
-        public List<Genre> Genres { get; set; } = new();
-        public List<MovieGenre> MovieGenres { get; set; } = new();
-
-        public List<Person> Persons { get; set; } = new();
-        public List<Cast> Casts { get; set; } = new();
+        public List<Genre> Genres { get; } = [];
+        public List<Person> Persons { get; } = [];
 
     }
 }

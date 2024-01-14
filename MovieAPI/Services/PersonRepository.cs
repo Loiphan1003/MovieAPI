@@ -95,13 +95,13 @@ namespace MovieAPI.Services
             return res;
         }
 
-        public PersonDTO Update(PersonDTO person)
+        public RepositoryResult Update(PersonUpdate person)
         {
             var res = _context.Persons.FirstOrDefault(p => p.Id.Equals(person.Id));
 
             if (res == null)
             {
-                return null;
+                return new RepositoryResult(false,"404", "Not Found");
             }
 
             res.Name = person.Name;
@@ -109,7 +109,7 @@ namespace MovieAPI.Services
             res.Gender = person.Gender;
             _context.Persons.Update(res);
             _context.SaveChanges();
-            return person;
+            return new RepositoryResult(true,"200", "Update Peron successfully");
         }
     }
 }

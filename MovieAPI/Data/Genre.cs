@@ -4,7 +4,6 @@
     {
         public Guid Id { get; set; }
         public required string Name { get; set; }
-        public List<Movie> Movies { get; set; } = new();
-        public List<MovieGenre> MovieGenres { get; set; } = new();
+        public List<Movie> Movies { get; } = [];
     }
 }

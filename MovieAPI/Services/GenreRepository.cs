@@ -26,7 +26,7 @@ namespace MovieAPI.Services
 
                 if (existGenre != null)
                 {
-                    return new RepositoryResult(false, "The film genre already exists");
+                    return new RepositoryResult(false,"404", "The film genre already exists");
                 }
 
                 Genre genre = new Genre
@@ -43,11 +43,11 @@ namespace MovieAPI.Services
                 //    new SqlParameter("@Name",genre.Name)
                 //    );
 
-                return new RepositoryResult(true, "More successful movie genres");
+                return new RepositoryResult(true,"200", "More successful movie genres");
             }
             catch (Exception ex)
             {
-                return new RepositoryResult(false, ex.ToString());
+                return new RepositoryResult(false,"500", ex.ToString());
             }
         }
 
@@ -104,12 +104,12 @@ namespace MovieAPI.Services
 
             if (res == null)
             {
-                return new RepositoryResult(false, "Film genres that do not exist");
+                return new RepositoryResult(false,"404", "Film genres that do not exist");
             }
             _context.Genres.Remove(res);
             _context.SaveChanges();
 
-            return new RepositoryResult(true, "Successfully remove movie genres");
+            return new RepositoryResult(true,"200", "Successfully remove movie genres");
         }
 
         public RepositoryResult Update(GenreDTO genre)
@@ -117,14 +117,14 @@ namespace MovieAPI.Services
             var res = _context.Genres.FirstOrDefault(g => g.Id.Equals(genre.Id));
             if (res == null)
             {
-                return new RepositoryResult(false, "Film genres that do not exist");
+                return new RepositoryResult(false,"404", "Film genres that do not exist");
             }
 
             res.Name = genre.Name;
             _context.Genres.Update(res);
             _context.SaveChanges();
 
-            return new RepositoryResult(true, "Successful movie genre update");
+            return new RepositoryResult(true,"200", "Successful movie genre update");
         }
     }
 }
