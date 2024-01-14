@@ -52,7 +52,7 @@ namespace MovieAPI.Controllers
 
         [Authorize]
         [HttpPut]
-        public IActionResult Update(PersonDTO person)
+        public IActionResult Update(PersonUpdate person)
         {
             var res = _personRepository.Update(person);
             if (res == null)

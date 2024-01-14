@@ -24,9 +24,9 @@ namespace MovieAPI.Controllers
                 var res = _movieRepository.GetAll(query);
                 return Ok(res);
             }
-            catch(Exception ex)
+            catch(Exception)
             {
-                return BadRequest($"{ex}");
+                return StatusCode(500, "Internal Server Error");
             }
         }
 
@@ -45,9 +45,9 @@ namespace MovieAPI.Controllers
             try
             {
                 var res = _movieRepository.Update(movie);
-                if (res == null)
+                if (res.Success == false)
                 {
-                    return NotFound();
+                    return Ok(res);
                 }
 
                 return Ok(res);
@@ -63,9 +63,9 @@ namespace MovieAPI.Controllers
         public IActionResult Delete(Guid id)
         {
             var res = _movieRepository.Delete(id);
-            if (res == null)
+            if (res.Success == false)
             {
-                return NotFound();
+                return Ok(res);
             }
             return Ok(res);
         }

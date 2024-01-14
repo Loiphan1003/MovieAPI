@@ -9,35 +9,37 @@ namespace MovieAPI.Services
     public class MovieRepository : IMovieRepository
     {
         private readonly MovieContext _context;
-        private readonly StoreProcedure _storeProcedure;
-        private readonly IGenreRepository _genreRepository;
-        private readonly ICastRepository _castRepository;
         private readonly IMapper _mapper;
 
-        public MovieRepository(MovieContext context, StoreProcedure storeProcedure, IGenreRepository genreRepository, IMapper mapper, ICastRepository castRepository)
+        public MovieRepository(MovieContext context, IMapper mapper)
         {
             _context = context;
-            _storeProcedure = storeProcedure;
-            _genreRepository = genreRepository;
             _mapper = mapper;
-            _castRepository = castRepository;
         }
 
-        public Movie Add(MovieVM movie)
-        {
-            Movie newMovie = new Movie
-            {
-                Id = Guid.NewGuid(),
-                Title = movie.Title,
-                Budget = movie.Budget,
-                DateRelease = movie.DateRelease,
-                IMDbRate = movie.IMDbRate,
-                Runtime = movie.Runtime
-            };
 
-            _context.Movies.Add(newMovie);
-            _context.SaveChanges();
-            return newMovie;
+        public RepositoryResult Add(MovieVM movie)
+        {
+            try
+            {
+                Movie newMovie = new Movie
+                {
+                    Id = Guid.NewGuid(),
+                    Title = movie.Title,
+                    Budget = movie.Budget,
+                    DateRelease = movie.DateRelease,
+                    IMDbRate = movie.IMDbRate,
+                    Runtime = movie.Runtime
+                };
+
+                _context.Movies.Add(newMovie);
+                _context.SaveChanges();
+                return new RepositoryResult(true,"200", "More successful movies");
+            }
+            catch
+            {
+                return new RepositoryResult(false, "500", "Add Erros");
+            }
         }
 
         public List<MovieDTO> GetAll(QueryObject queryObject)
@@ -79,23 +81,16 @@ namespace MovieAPI.Services
             }
             #endregion
 
-            var movies = query.Select(m => _mapper.Map<MovieDTO>(m)).ToList();
-
-            if (movies == null)
-            {
-                return [];
-            }
-
-            foreach (var item in movies)
-            {
-                item.Genres = _genreRepository.GetAllByIdMovie(item.Id);
-                item.Casts = _castRepository.GetAllCastByMovieId(item.Id);
-            }
+            var movies = query
+                        .Include(m => m.Persons)
+                        .Include(m => m.Genres)
+                        .Select(m => _mapper.Map<MovieDTO>(m))
+                        .ToList();
 
             return movies;
         }
 
-        public MovieUpdate Update(MovieUpdate movie)
+        public RepositoryResult Update(MovieUpdate movie)
         {
             try
             {
@@ -103,7 +98,7 @@ namespace MovieAPI.Services
 
                 if (res == null)
                 {
-                    return null;
+                    return new RepositoryResult(false,"404", "Movie updates fail, movies don't exist");
                 }
 
                 res.Title = movie.Title;
@@ -114,25 +109,25 @@ namespace MovieAPI.Services
 
                 _context.Movies.Update(res);
                 _context.SaveChanges();
-                return movie;
+                return new RepositoryResult(true,"200", "Successful movie updates");
             }
-            catch
+            catch (Exception ex)
             {
-                return null;
+                return new RepositoryResult(false,"500", ex.ToString());
             }
         }
 
-        public Movie Delete(Guid id)
+        public RepositoryResult Delete(Guid id)
         {
             var res = _context.Movies
-                .FirstOrDefault(m => m.Id.Equals(id));
+                                .FirstOrDefault(m => m.Id.Equals(id));
             if (res == null)
             {
-                return null;
+                return new RepositoryResult(false, "404" ,"Movie deletion failed, movie Id does not exist");
             }
             _context.Movies.Remove(res);
             _context.SaveChanges();
-            return res;
+            return new RepositoryResult(true,"200", "Successfully delete movies");
         }
 
     }

@@ -6,8 +6,8 @@ namespace MovieAPI.Services
     public interface IMovieRepository
     {
         List<MovieDTO> GetAll(QueryObject query);
-        Movie Add(MovieVM movie);
-        MovieUpdate Update(MovieUpdate movie);
-        Movie Delete(Guid id);
+        RepositoryResult Add(MovieVM movie);
+        RepositoryResult Update(MovieUpdate movie);
+        RepositoryResult Delete(Guid id);
     }
 }

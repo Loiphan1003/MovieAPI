@@ -32,7 +32,7 @@ namespace MovieAPI.Services
             {
                 MovieId = movie.Id,
                 PersonId = person.Id,
-                CharacterName = cast.CharacterName
+                Character = cast.Character
             };
             _context.Casts.Add(newCast);
             _context.SaveChanges();
@@ -44,24 +44,24 @@ namespace MovieAPI.Services
             return _context.Casts.ToList();
         }
 
-        public List<CastDTO> GetAllCastByMovieId(Guid movieId)
-        {
-            var res = _context.Casts
-                .Where(c => c.MovieId.Equals(movieId))
-                .Select(c => new CastDTO
-                {
-                    CharacterName = c.CharacterName,
-                    Id = c.PersonId,
-                })
-                .ToList();
+        //public List<CastDTO> GetAllCastByMovieId(Guid movieId)
+        //{
+        //    var res = _context.Casts
+        //        .Where(c => c.MovieId.Equals(movieId))
+        //        .Select(c => new CastDTO
+        //        {
+        //            CharacterName = c.CharacterName,
+        //            Id = c.PersonId,
+        //        })
+        //        .ToList();
 
-            foreach (var item in res)
-            {
-                var person = _context.Persons.FirstOrDefault(p => p.Id.Equals(item.Id));
-                item.Name = person.Name;
-            }
+        //    foreach (var item in res)
+        //    {
+        //        var person = _context.Persons.FirstOrDefault(p => p.Id.Equals(item.Id));
+        //        item.Name = person.Name;
+        //    }
 
-            return res;
-        }
+        //    return res;
+        //}
     }
 }
