@@ -1,17 +1,34 @@
 # MovieAPI
 This is a sample API about Movie
 ## Features
-- Automaper. 
+- Mapper: Mapster. 
 - Entity Framework (Code Frist).
 - SQL Server.
-- Serilog
-- Repository Pattern.
+- Pattern: Repository.
+- Global Erro Handling
 
 ## Api
 Movie. <br>
 | Method | End Point | Description |
 | ----------- | ----------- | ----------- |
 | GET | /movie | Get  all movies |
-| GET | /movie?Search={ value} | Search movie name |
-| GET | /movie?SortBy={ value } | - imdb_rate_desc : IMDb Descending <br>  - imdb_rate_desc : IMDb Ascending <br> - budget_desc : Budget Descending <br> - budget_asc : Budget_desc : Budget Ascending |
-| GET | /movie?Page={ number }&PageSize={ number } | - Page : The number page <br> - PageSize : Number of objects in 1 page |
+| GET | /movie/getcast?name={movie name} | Get cast of movie |
+
+<br>
+
+Genre. <br>
+| Method | End Point | Description |
+| ----------- | ----------- | ----------- |
+| GET | /genre | Get  all movie genres |
+| POST | /genre | Add a new genre |
+| DELETE | /genre?id={id genre} | Delete a genre |
+| UPDATE | /genre | Update a genre |
+
+<br>
+
+Person. <br>
+| Method | End Point | Description |
+| ----------- | ----------- | ----------- |
+| GET | /person | Get  all person |
+| POST | /person | Add a new person |
+| DELETE | /person/{person name} | Delete a person |
