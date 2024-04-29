@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MovieAPI.Entities;
-using MovieAPI.Services;
+using MovieAPI.Repositories;
 
 namespace MovieAPI.Controllers
 {
@@ -17,57 +17,104 @@ namespace MovieAPI.Controllers
         }
 
         [HttpGet]
-        public IActionResult GetAll([FromQuery] QueryObject query)
+        public async Task<IActionResult> GetAll()
         {
             try
             {
-                var res = _movieRepository.GetAll(query);
+                var res = await _movieRepository.GetAllAsync();
                 return Ok(res);
             }
-            catch(Exception)
+            catch (Exception)
             {
                 return StatusCode(500, "Internal Server Error");
             }
         }
 
-        [Authorize]
-        [HttpPost]
-        public IActionResult Add(MovieVM movieVM)
+        [HttpGet]
+        [Route($"getcast")]
+        public async Task<IActionResult> GetCast([FromQuery] string name)
         {
-            var res = _movieRepository.Add(movieVM);
-            return Ok(res);
-        }
-
-        [Authorize]
-        [HttpPut]
-        public IActionResult UpdateOne(MovieUpdate movie)
-        {
-            try
-            {
-                var res = _movieRepository.Update(movie);
-                if (res.Success == false)
-                {
-                    return Ok(res);
-                }
-
-                return Ok(res);
-            }
-            catch
+            if (string.IsNullOrEmpty(name))
             {
                 return BadRequest();
             }
-        }
 
-        [Authorize]
-        [HttpDelete]
-        public IActionResult Delete(Guid id)
-        {
-            var res = _movieRepository.Delete(id);
-            if (res.Success == false)
-            {
-                return Ok(res);
-            }
+            var res = await _movieRepository.GetCastAsync(name);
+
             return Ok(res);
         }
+
+        // [Authorize]
+        [HttpPost]
+        public async Task<IActionResult> Add([FromForm] MovieVM model)
+        {
+            var res = await _movieRepository.InsertAsync(model);
+            return Ok(res);
+        }
+
+        [HttpPost]
+        [Route("addcast")]
+        public async Task<IActionResult> AddCast([FromForm] CastAdd model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest();
+            }
+
+            var res = await _movieRepository.InsertCastAsync(model);
+
+            if (res.IsFailure)
+            {
+                return Ok(res.Error);
+            }
+
+            return Ok(res.Message);
+        }
+
+        [HttpPost]
+        [Route("addGenre")]
+        public async Task<IActionResult> AddGenre([FromForm] MovieGenreVM model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest();
+            }
+
+            var response = await _movieRepository.InsertGenreAsync(model);
+
+            return Ok(response);
+        }
+
+        // [Authorize]
+        // [HttpPut]
+        // public IActionResult UpdateOne(MovieUpdate movie)
+        // {
+        //     try
+        //     {
+        //         var res = _movieRepository.Update(movie);
+        //         if (res.Success == false)
+        //         {
+        //             return Ok(res);
+        //         }
+
+        //         return Ok(res);
+        //     }
+        //     catch
+        //     {
+        //         return BadRequest();
+        //     }
+        // }
+
+        // [Authorize]
+        // [HttpDelete]
+        // public IActionResult Delete(Guid id)
+        // {
+        //     var res = _movieRepository.Delete(id);
+        //     if (res.Success == false)
+        //     {
+        //         return Ok(res);
+        //     }
+        //     return Ok(res);
+        // }
     }
 }

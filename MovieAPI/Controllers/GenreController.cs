@@ -1,12 +1,14 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using System.Globalization;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using MovieAPI.Entities;
-using MovieAPI.Services;
+using MovieAPI.Repositories;
+using MovieAPI.Result;
 
 namespace MovieAPI.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/genre")]
     [ApiController]
     public class GenreController : ControllerBase
     {
@@ -18,57 +20,75 @@ namespace MovieAPI.Controllers
         }
 
         [HttpGet]
-        public IActionResult GetAll([FromQuery] QueryObject query)
+        public IActionResult GetAll()
         {
-            var res = _genreRepository.GetAll(query);
+            var res = _genreRepository.GetAllAsync();
             return Ok(res);
         }
 
-        //[Authorize]
+        // //[Authorize]
         [HttpPost]
-        public IActionResult AddOne(GenreVM genreVM)
+        public async Task<IActionResult> Insert([FromForm] string name)
         {
-            if(!ModelState.IsValid)
+            if (string.IsNullOrEmpty(name))
             {
                 return BadRequest();
             }
-            var res = _genreRepository.Add(genreVM);
-            return Ok(res);
+
+            if (int.TryParse(name, out _))
+            {
+                return BadRequest("Name is not a string");
+            }
+
+            var response = await _genreRepository.InsertAsync(name);
+
+            if (response.IsFailure)
+            {
+                if (response.Error.code.Equals(Errors.Code.AlreadyCreate.ToString()))
+                {
+                    return Conflict(response.Error);
+                }
+
+                return BadRequest(response.Error.description);
+            }
+
+            return Ok(response.Message);
         }
 
-        //[Authorize]
-        [HttpDelete("{id}")]
-        public IActionResult Delete(Guid id)
+        // //[Authorize]
+        [HttpDelete]
+        public async Task<IActionResult> Remove(int id)
         {
-            if(id == Guid.Empty)
+            if (string.IsNullOrEmpty(id.ToString()) || id <= 0)
             {
                 return BadRequest();
             }
 
-            var res = _genreRepository.RemoveById(id);
-            if(res.Success == false)
+            var res = await _genreRepository.RemoveAsync(id);
+            if (res.IsFailure)
             {
                 return NotFound();
             }
-            return Ok(res);
+            return Ok(res.Message);
         }
 
-        //[Authorize]
+        // //[Authorize]
         [HttpPut]
-        public IActionResult Update(GenreDTO genre)
+        public async Task<IActionResult> Update([FromForm] GenreDTO genre)
         {
-            if(!ModelState.IsValid)
+            if (!ModelState.IsValid || genre.Id <= 0)
             {
                 return BadRequest();
             }
 
-            var res = _genreRepository.Update(genre);
-            if(res.Success == false)
+            var res = await _genreRepository.UpdateAsync(genre);
+
+            if (res.IsFailure)
             {
                 return NotFound();
             }
 
-            return Ok(res);
+            return Ok(res.Message);
         }
     }
 }

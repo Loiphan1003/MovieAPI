@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using MovieAPI.Entities;
-using MovieAPI.Services;
 
 namespace MovieAPI.Controllers
 {
@@ -10,30 +9,30 @@ namespace MovieAPI.Controllers
     [ApiController]
     public class MovieGenresController : ControllerBase
     {
-        private readonly IMovieGenreRepository _movieGenreRepository;
+        // private readonly IMovieGenreRepository _movieGenreRepository;
 
-        public MovieGenresController(IMovieGenreRepository movieGenreRepository)
-        {
-            _movieGenreRepository = movieGenreRepository;
-        }
+        // public MovieGenresController(IMovieGenreRepository movieGenreRepository)
+        // {
+        //     _movieGenreRepository = movieGenreRepository;
+        // }
 
-        [Authorize]
-        [HttpPost("add-one")]
-        public IActionResult AddOne(MovieGenreVM movieGenre)
-        {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest();
-            }
+        // [Authorize]
+        // [HttpPost("add-one")]
+        // public IActionResult AddOne(MovieGenreVM movieGenre)
+        // {
+        //     if (!ModelState.IsValid)
+        //     {
+        //         return BadRequest();
+        //     }
 
-            var res = _movieGenreRepository.AddOne(movieGenre);
+        //     var res = _movieGenreRepository.AddOne(movieGenre);
 
-            if(res == false)
-            {
-                return BadRequest();
-            }
+        //     if(res == false)
+        //     {
+        //         return BadRequest();
+        //     }
 
-            return Ok();
-        }
+        //     return Ok();
+        // }
     }
 }

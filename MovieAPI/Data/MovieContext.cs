@@ -1,10 +1,8 @@
-﻿using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 
 namespace MovieAPI.Data
 {
-    public class MovieContext : IdentityDbContext<IdentityUser>
+    public class MovieContext : DbContext
     {
         public MovieContext(DbContextOptions<MovieContext> options) : base(options)
         {
@@ -12,8 +10,9 @@ namespace MovieAPI.Data
         }
 
         public DbSet<Genre> Genres { get; set; }
+        public DbSet<Company> Companies { get; set; }
         public DbSet<Movie> Movies { get; set; }
-        public DbSet<MovieGenre> MovieGenres { get; set; }
+        public DbSet<MovieGenres> MovieGenres { get; set; }
         public DbSet<Person> Persons { get; set; }
         public DbSet<Cast> Casts { get; set; }
 
@@ -28,12 +27,11 @@ namespace MovieAPI.Data
             modelBuilder.Entity<Genre>()
                 .HasMany(g => g.Movies)
                 .WithMany(m => m.Genres)
-                .UsingEntity<MovieGenre>();
-
+                .UsingEntity<MovieGenres>();
 
             modelBuilder.Entity<Person>()
                 .HasMany(p => p.Movies)
-                .WithMany(m => m.Persons)
+                .WithMany(p => p.People)
                 .UsingEntity<Cast>();
         }
     }
